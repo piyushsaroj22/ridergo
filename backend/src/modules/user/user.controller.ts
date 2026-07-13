@@ -1,6 +1,9 @@
 import asyncHandler from "../../utils/asyncHandler.js";
-import { getUserProfile, updateUserProfile } from "./user.service.js";
-import { uploadProfileImage } from "./user.service.js";
+import {
+  getUserProfile,
+  updateUserProfile,
+  uploadProfileImage,
+} from "./user.service.js";
 
 export const getProfile = asyncHandler(async (req, res) => {
   const result = await getUserProfile(req.user!);

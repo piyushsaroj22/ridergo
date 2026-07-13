@@ -11,7 +11,7 @@ export const sendVerificationEmail = async (
 ): Promise<void> => {
   const token = crypto.randomBytes(32).toString("hex");
 
-  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
   await EmailVerificationModel.deleteMany({
     user: userId,

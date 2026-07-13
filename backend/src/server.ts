@@ -1,6 +1,7 @@
 import app from "./app.js";
 import env from "./config/env.js";
 import connectDatabase from "./config/database.js";
+import { cleanupExpiredVerificationUsers } from "./modules/emailVerification/emailVerification.cleanup.js";
 
 const startServer = async () => {
   try {
@@ -18,3 +19,11 @@ const startServer = async () => {
 };
 
 startServer();
+
+setInterval(async () => {
+  try {
+    await cleanupExpiredVerificationUsers();
+  } catch (error) {
+    console.error("Verification cleanup failed:", error);
+  }
+}, 60 * 1000);
