@@ -53,3 +53,58 @@ export interface GetCurrentDriverResponse {
     isOnline: boolean;
   };
 }
+
+export interface GetDriverProfileResponse {
+  success: boolean;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    vehicleType: string;
+    profileImage: string;
+    isEmailVerified: boolean;
+    isApproved: boolean;
+    isOnline: boolean;
+  };
+}
+
+export interface UpdateDriverProfileInput {
+  name: string;
+  phone: string;
+}
+
+export interface UpdateDriverProfileResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    vehicleType: string;
+    profileImage: string;
+    isEmailVerified: boolean;
+    isApproved: boolean;
+    isOnline: boolean;
+  };
+}
+
+export interface UpdateDriverImageResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    vehicleType: string;
+    profileImage: string;
+    licenseImage: string;
+    rcImage: string;
+    vehicleImage: string;
+    isEmailVerified: boolean;
+    isApproved: boolean;
+    isOnline: boolean;
+  };
+}

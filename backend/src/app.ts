@@ -20,11 +20,8 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use("/health", healthRoutes);
-
 app.use("/api/auth", authRoutes);
-
 app.use("/api/users", userRoutes);
-
 app.use("/api/drivers", driverRoutes);
 
 app.use(notFoundMiddleware);
