@@ -37,7 +37,7 @@ export const logout = asyncHandler(async (req, res) => {
 });
 
 export const me = asyncHandler(async (req, res) => {
-  const result = await getCurrentUser(req.user!);
+  const result = await getCurrentUser(req.account!);
 
   res.status(200).json(result);
 });

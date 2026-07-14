@@ -26,4 +26,4 @@ setInterval(async () => {
   } catch (error) {
     console.error("Verification cleanup failed:", error);
   }
-}, 60 * 1000);
+}, 60 * 1000); // Run every 1 minutes

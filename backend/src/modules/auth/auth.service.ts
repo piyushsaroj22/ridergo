@@ -9,6 +9,7 @@ import { sendVerificationEmail } from "../emailVerification/emailVerification.se
 import { HydratedDocument } from "mongoose";
 import { GetCurrentUserResponse } from "./auth.types.js";
 import { User } from "../user/user.model.js";
+import DriverModel from "../driver/driver.model.js";
 import {
   RegisterUserInput,
   LoginUserInput,
@@ -45,7 +46,12 @@ export const registerUser = async ({
 
   await user.save();
 
-  await sendVerificationEmail(user._id.toString(), user.name, user.email);
+  await sendVerificationEmail(
+    user._id.toString(),
+    "User",
+    user.name,
+    user.email,
+  );
 
   return {
     success: true,
@@ -78,21 +84,30 @@ export const verifyUserEmail = async (
     throw new AppError("Verification token has expired", 400);
   }
 
-  const user = await UserModel.findById(verificationToken.user);
+  let account;
 
-  if (!user) {
-    throw new AppError("User not found", 404);
+  if (verificationToken.accountType === "User") {
+    account = await UserModel.findById(verificationToken.user);
+  } else {
+    account = await DriverModel.findById(verificationToken.user);
   }
 
-  user.isEmailVerified = true;
+  if (!account) {
+    throw new AppError(`${verificationToken.accountType} not found`, 404);
+  }
 
-  await user.save();
+  account.isEmailVerified = true;
+
+  await account.save();
 
   await EmailVerificationModel.deleteOne({
     _id: verificationToken._id,
   });
 
-  const jwtToken = generateToken(user._id.toString());
+  const jwtToken = generateToken(
+    account._id.toString(),
+    verificationToken.accountType,
+  );
 
   setAuthCookie(res, jwtToken);
 
@@ -100,10 +115,10 @@ export const verifyUserEmail = async (
     success: true,
     message: "Email verified successfully",
     data: {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      isEmailVerified: user.isEmailVerified,
+      id: account._id.toString(),
+      name: account.name,
+      email: account.email,
+      isEmailVerified: account.isEmailVerified,
     },
   };
 };
@@ -138,7 +153,7 @@ export const loginUser = async (
   }
 
   // Generate JWT
-  const jwtToken = generateToken(user._id.toString());
+  const jwtToken = generateToken(user._id.toString(), "User");
 
   // Set Cookie
   setAuthCookie(res, jwtToken);

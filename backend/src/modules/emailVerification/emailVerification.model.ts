@@ -8,6 +8,12 @@ const emailVerificationSchema = new Schema(
       required: true,
     },
 
+    accountType: {
+      type: String,
+      enum: ["User", "Driver"],
+      required: true,
+    },
+
     token: {
       type: String,
       required: true,

@@ -6,12 +6,13 @@ import { sendMail } from "../../services/mail.service.js";
 
 export const sendVerificationEmail = async (
   userId: string,
+  accountType: "User" | "Driver",
   name: string,
   email: string,
 ): Promise<void> => {
   const token = crypto.randomBytes(32).toString("hex");
 
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // todo ye baad me sahi kar dunga 15 * 60 * 1000
 
   await EmailVerificationModel.deleteMany({
     user: userId,
@@ -19,6 +20,7 @@ export const sendVerificationEmail = async (
 
   await EmailVerificationModel.create({
     user: userId,
+    accountType,
     token,
     expiresAt,
   });
