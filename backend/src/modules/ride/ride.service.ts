@@ -23,6 +23,14 @@ import {
   dispatchNextDriver,
 } from "../../services/dispatch.service.js";
 import {
+  emitRideAccepted,
+  emitDriverArrived,
+  emitRideOtpVerified,
+  emitRideStarted,
+  emitRideCompleted,
+  emitRideCancelled,
+} from "../../sockets/socket.events.js";
+import {
   GetDriverRideResponse,
   DriverArrivedResponse,
   VerifyRideOtpInput,
@@ -169,6 +177,10 @@ export const driverArrived = async (
 
   await ride.save();
 
+  emitDriverArrived(ride.rider.toString(), {
+    rideId: ride._id.toString(),
+  });
+
   return {
     success: true,
     message: "Driver arrived successfully",
@@ -213,6 +225,10 @@ export const verifyRideOtp = async (
 
   await ride.save();
 
+  emitRideOtpVerified(ride.rider.toString(), {
+    rideId: ride._id.toString(),
+  });
+
   return {
     success: true,
     message: "OTP verified successfully",
@@ -236,6 +252,30 @@ export const acceptRide = async (
   await acceptRideOffer(rideId, driver._id.toString());
 
   await assignRideToDriver(rideId, driver._id);
+
+  const ride = await RideModel.findById(rideId);
+
+  if (!ride) {
+    throw new AppError("Ride not found", 404);
+  }
+
+  const latestDriver = await DriverModel.findById(driver._id);
+
+  if (!latestDriver) {
+    throw new AppError("Driver not found", 404);
+  }
+
+  emitRideAccepted(ride.rider.toString(), {
+    rideId: ride._id.toString(),
+
+    driver: {
+      id: latestDriver._id.toString(),
+      name: latestDriver.name,
+      phone: latestDriver.phone,
+      profileImage: latestDriver.profileImage,
+      vehicleType: latestDriver.vehicleType,
+    },
+  });
 
   return {
     success: true,
@@ -289,6 +329,10 @@ export const startRide = async (
 
   await ride.save();
 
+  emitRideStarted(ride.rider.toString(), {
+    rideId: ride._id.toString(),
+  });
+
   return {
     success: true,
     message: "Ride started successfully",
@@ -328,6 +372,10 @@ export const completeRide = async (
   }
 
   await ride.save();
+
+  emitRideCompleted(ride.rider.toString(), {
+    rideId: ride._id.toString(),
+  });
 
   driver.isAvailable = true;
 
@@ -400,6 +448,11 @@ export const cancelRideByUser = async (
 
     await ride.save();
 
+    emitRideCancelled(ride.rider.toString(), {
+      rideId: ride._id.toString(),
+      cancelledBy: ride.cancelledBy!,
+    });
+
     await expireAllRideOffers(rideId);
 
     return {
@@ -448,6 +501,11 @@ export const cancelRideByDriver = async (
   // ride.dispatch.currentDriverIndex++;
 
   await ride.save();
+
+  emitRideCancelled(ride.rider.toString(), {
+    rideId: ride._id.toString(),
+    cancelledBy: ride.cancelledBy!,
+  });
 
   await dispatchNextDriver(rideId);
 

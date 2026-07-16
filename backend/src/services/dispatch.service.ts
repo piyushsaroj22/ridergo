@@ -2,6 +2,7 @@ import { HydratedDocument } from "mongoose";
 import RideModel from "../modules/ride/ride.model.js";
 import DriverModel, { Driver } from "../modules/driver/driver.model.js";
 import { findNearbyDrivers } from "./driverMatching.service.js";
+import { emitRideOffer } from "../sockets/socket.events.js";
 // import RideOfferModel from "../modules/rideOffer/rideOffer.model.js";
 import {
   createRideOffer,
@@ -27,6 +28,29 @@ const offerCurrentDriver = async (rideId: string) => {
   const driverId = ride.dispatch.queue[ride.dispatch.currentDriverIndex];
 
   await createRideOffer(rideId, driverId.toString());
+
+  emitRideOffer(driverId.toString(), {
+    rideId: ride._id.toString(),
+    riderId: ride.rider.toString(),
+
+    pickup: {
+      address: ride.pickup.address,
+      latitude: ride.pickup.latitude,
+      longitude: ride.pickup.longitude,
+    },
+
+    destination: {
+      address: ride.destination.address,
+      latitude: ride.destination.latitude,
+      longitude: ride.destination.longitude,
+    },
+
+    vehicleType: ride.vehicleType,
+
+    fare: ride.fare,
+    distance: ride.distance,
+    duration: ride.duration,
+  });
 };
 
 export const dispatchRide = async (rideId: string) => {
