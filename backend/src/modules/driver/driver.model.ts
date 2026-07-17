@@ -109,7 +109,21 @@ const driverSchema = new Schema(
       type: Boolean,
       default: false,
     },
+
     pendingPenalty: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+
+    totalRatings: {
       type: Number,
       default: 0,
       min: 0,

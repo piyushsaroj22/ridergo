@@ -19,39 +19,32 @@ import {
 
 const router = Router();
 
-router.post("/", protectRoute, authorize("User"), create);
-router.get("/driver", protectRoute, authorize("Driver"), driverRide);
-router.patch("/:rideId/arrived", protectRoute, authorize("Driver"), arrived);
+router.use(protectRoute); // Apply protectRoute middleware to all routes
 
-router.get("/history", protectRoute, authorize("User"), userRideHistory);
+router.post("/", authorize("User"), create);
 
-router.get(
-  "/driver/history",
-  protectRoute,
-  authorize("Driver"),
-  driverRideHistory,
-);
+router.get("/driver", authorize("Driver"), driverRide);
 
-router.get("/:rideId", protectRoute, authorize("User", "Driver"), rideDetails);
+router.patch("/:rideId/arrived", authorize("Driver"), arrived);
 
-router.patch(
-  "/:rideId/verify-otp",
-  protectRoute,
-  authorize("Driver"),
-  verifyOtp,
-);
+router.get("/history", authorize("User"), userRideHistory);
 
-router.patch("/:rideId/accept", protectRoute, authorize("Driver"), accept);
-router.patch("/:rideId/reject", protectRoute, authorize("Driver"), reject);
-router.patch("/:rideId/start", protectRoute, authorize("Driver"), start);
-router.patch("/:rideId/complete", protectRoute, authorize("Driver"), complete);
-router.patch("/:rideId/cancel", protectRoute, authorize("User"), cancelByUser);
+router.get("/driver/history", authorize("Driver"), driverRideHistory);
 
-router.patch(
-  "/:rideId/driver-cancel",
-  protectRoute,
-  authorize("Driver"),
-  cancelByDriver,
-);
+router.get("/:rideId", authorize("User", "Driver"), rideDetails);
+
+router.patch("/:rideId/verify-otp", authorize("Driver"), verifyOtp);
+
+router.patch("/:rideId/accept", authorize("Driver"), accept);
+
+router.patch("/:rideId/reject", authorize("Driver"), reject);
+
+router.patch("/:rideId/start", authorize("Driver"), start);
+
+router.patch("/:rideId/complete", authorize("Driver"), complete);
+
+router.patch("/:rideId/cancel", authorize("User"), cancelByUser);
+
+router.patch("/:rideId/driver-cancel", authorize("Driver"), cancelByDriver);
 
 export default router;

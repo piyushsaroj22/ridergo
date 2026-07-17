@@ -10,6 +10,7 @@ import errorMiddleware from "./middlewares/error.middleware.js";
 import userRoutes from "./modules/user/user.routes.js";
 import driverRoutes from "./modules/driver/driver.routes.js";
 import rideRoutes from "./modules/ride/ride.routes.js";
+import reviewRoutes from "./modules/review/review.routes.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/rides", rideRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
